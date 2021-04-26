@@ -2,28 +2,21 @@ import "./App.css";
 import "semantic-ui-css/semantic.min.css";
 import React from "react";
 import { Icon } from "semantic-ui-react";
+import { connect } from "react-redux";
+import { setCourse, removeCourse } from "./redux/actions/courses.action";
 
-const App = () => {
+const App = ({ courses, setCourse, removeCourse }) => {
   const [inputValue, setInputValue] = React.useState("");
-  const [courses, setCourses] = React.useState([]);
 
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-    setCourses([
-      ...courses,
-      {
-        key: inputValue,
-        value: inputValue,
-        disable: false,
-      },
-    ]);
+  const handleOnSubmit = (course) => {
+    course.preventDefault();
+    const generateCourse = {
+      id: inputValue,
+      name: inputValue,
+    };
+
+    setCourse(generateCourse);
     setInputValue("");
-  };
-
-  const handleRemoveCourse = (courseToDelete) => {
-    return setCourses(
-      courses.filter((course) => course.key !== courseToDelete.key)
-    );
   };
 
   return (
@@ -31,12 +24,12 @@ const App = () => {
       <h1>Add Courses:</h1>
       <ul>
         {courses.map((course) => (
-          <li key={course.key}>
-            {`${course.value} `}
+          <li key={course.id}>
+            {`${course.name} `}
             <Icon
               name="remove circle"
               size="small"
-              onClick={() => handleRemoveCourse(course)}
+              onClick={() => removeCourse(course)}
             />
           </li>
         ))}
@@ -54,4 +47,17 @@ const App = () => {
   );
 };
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    courses: state.courses,
+  };
+};
+
+const mapDispatchToProp = (dispatch) => {
+  return {
+    setCourse: (course) => dispatch(setCourse(course)),
+    removeCourse: (course) => dispatch(removeCourse(course)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProp)(App);
